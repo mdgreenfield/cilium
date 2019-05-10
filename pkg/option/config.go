@@ -463,6 +463,12 @@ const (
 	// ForceLocalPolicyEvalAtSource forces a policy decision at the source
 	// endpoint for all local communication
 	ForceLocalPolicyEvalAtSource = "force-local-policy-eval-at-source"
+
+	// IPAM is the IPAM method to use
+	IPAM = "ipam"
+
+	// IPAMHostSCope is the value to select the hostscope IPAM plugin for option.IPAM
+	IPAMHostScope = "hostscope"
 )
 
 // FQDNS variables
@@ -930,6 +936,9 @@ type DaemonConfig struct {
 	// ForceLocalPolicyEvalAtSource forces a policy decision at the source
 	// endpoint for all local communication
 	ForceLocalPolicyEvalAtSource bool
+
+	// IPAM is the IPAM method to use
+	IPAM string
 }
 
 var (
@@ -955,6 +964,7 @@ var (
 		EndpointInterfaceNamePrefix:  defaults.EndpointInterfaceNamePrefix,
 		BlacklistConflictingRoutes:   defaults.BlacklistConflictingRoutes,
 		ForceLocalPolicyEvalAtSource: defaults.ForceLocalPolicyEvalAtSource,
+		IPAM:                         IPAMHostScope,
 	}
 )
 
@@ -1193,6 +1203,7 @@ func (c *DaemonConfig) Populate() {
 	c.HTTPRetryTimeout = viper.GetInt(HTTPRetryTimeout)
 	c.IPv4ClusterCIDRMaskSize = viper.GetInt(IPv4ClusterCIDRMaskSize)
 	c.IdentityChangeGracePeriod = viper.GetDuration(IdentityChangeGracePeriod)
+	c.IPAM = viper.GetString(IPAM)
 	c.IPv4Range = viper.GetString(IPv4Range)
 	c.IPv4NodeAddr = viper.GetString(IPv4NodeAddr)
 	c.IPv4ServiceRange = viper.GetString(IPv4ServiceRange)
