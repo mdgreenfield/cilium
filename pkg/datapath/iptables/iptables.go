@@ -452,11 +452,17 @@ func iptProxyRules(cmd string, proxyPort uint16, ingress bool, name string) erro
 }
 
 func InstallProxyRules(proxyPort uint16, ingress bool, name string) error {
-	return iptProxyRules("-A", proxyPort, ingress, name)
+	if option.Config.EnableProxyRedirect {
+		return iptProxyRules("-A", proxyPort, ingress, name)
+	}
+	return nil
 }
 
 func RemoveProxyRules(proxyPort uint16, ingress bool, name string) error {
-	return iptProxyRules("-D", proxyPort, ingress, name)
+	if option.Config.EnableProxyRedirect {
+		return iptProxyRules("-D", proxyPort, ingress, name)
+	}
+	return nil
 }
 
 // InstallRules installs iptables rules for Cilium in specific use-cases
@@ -468,8 +474,10 @@ func (m *IptablesManager) InstallRules(ifName string) error {
 		}
 	}
 
-	if err := installProxyNotrackRules(); err != nil {
-		return fmt.Errorf("cannot add proxy NOTRACK rules: %s", err)
+	if option.Config.EnableProxyRedirect {
+		if err := installProxyNotrackRules(); err != nil {
+			return fmt.Errorf("cannot add proxy NOTRACK rules: %s", err)
+		}
 	}
 
 	if option.Config.EnableIPv4 {
@@ -622,14 +630,16 @@ func (m *IptablesManager) InstallRules(ifName string) error {
 				}
 			}
 
-			// Exclude proxy return traffic from the masquarade rules
-			if err := runProg("iptables", []string{
-				"-t", "nat",
-				"-A", ciliumPostNatChain,
-				"-m", "mark", "--mark", matchFromProxy, // Don't match proxy (return) traffic
-				"-m", "comment", "--comment", "exclude proxy return traffic from masquarade",
-				"-j", "ACCEPT"}, false); err != nil {
-				return err
+			if option.Config.EnableProxyRedirect {
+				// Exclude proxy return traffic from the masquarade rules
+				if err := runProg("iptables", []string{
+					"-t", "nat",
+					"-A", ciliumPostNatChain,
+					"-m", "mark", "--mark", matchFromProxy, // Don't match proxy (return) traffic
+					"-m", "comment", "--comment", "exclude proxy return traffic from masquarade",
+					"-j", "ACCEPT"}, false); err != nil {
+					return err
+				}
 			}
 
 			// Masquerade all traffic from the host into the ifName

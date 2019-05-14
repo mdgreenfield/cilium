@@ -952,6 +952,8 @@ type DaemonConfig struct {
 	AutoCreateCiliumNodeResource bool
 
 	EnableENI bool
+
+	EnableProxyRedirect bool
 }
 
 var (
@@ -980,6 +982,7 @@ var (
 		IPAM:                         IPAMHostScope,
 		AutoCreateCiliumNodeResource: defaults.AutoCreateCiliumNodeResource,
 		EnableENI:                    true,
+		EnableProxyRedirect:          false,
 	}
 )
 
