@@ -28,9 +28,11 @@ import (
 	k8sversion "github.com/cilium/cilium/pkg/k8s/version"
 	"github.com/cilium/cilium/pkg/lock"
 	"github.com/cilium/cilium/pkg/node"
+	"github.com/cilium/cilium/pkg/option"
 	"github.com/cilium/cilium/pkg/trigger"
 
 	"k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/tools/cache"
@@ -56,6 +58,18 @@ func newNodeStore() *nodeStore {
 		availableIPs: map[Family]int{},
 	}
 	ciliumClient := k8s.CiliumClient()
+
+	if option.Config.AutoCreateCiliumNodeResource {
+		nodeResource := &ciliumv2.CiliumNode{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: node.GetName(),
+			},
+		}
+		_, err := ciliumClient.CiliumV2().CiliumNodes("default").Create(nodeResource)
+		if err != nil {
+			log.WithError(err).Error("Unable to create CiliumNode resource")
+		}
+	}
 
 	t, err := trigger.NewTrigger(trigger.Parameters{
 		Name:        "crd-allocator-node-refresher",

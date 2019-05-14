@@ -472,6 +472,10 @@ const (
 
 	// IPAMCRD is the value to select the CRD-backed IPAM  plugin for option.IPAM
 	IPAMCRD = "crd"
+
+	// AutoCreateCiliumNodeResource enables automatic creation of a
+	// CiliumNode resource for the local node
+	AutoCreateCiliumNodeResource = "auto-create-ciliumnode-resource"
 )
 
 // FQDNS variables
@@ -942,6 +946,10 @@ type DaemonConfig struct {
 
 	// IPAM is the IPAM method to use
 	IPAM string
+
+	// AutoCreateCiliumNodeResource enables automatic creation of a
+	// CiliumNode resource for the local node
+	AutoCreateCiliumNodeResource bool
 }
 
 var (
@@ -968,6 +976,7 @@ var (
 		BlacklistConflictingRoutes:   defaults.BlacklistConflictingRoutes,
 		ForceLocalPolicyEvalAtSource: defaults.ForceLocalPolicyEvalAtSource,
 		IPAM:                         IPAMHostScope,
+		AutoCreateCiliumNodeResource: defaults.AutoCreateCiliumNodeResource,
 	}
 )
 
@@ -1168,6 +1177,7 @@ func (c *DaemonConfig) Populate() {
 	c.AccessLog = viper.GetString(AccessLog)
 	c.AgentLabels = viper.GetStringSlice(AgentLabels)
 	c.AllowLocalhost = viper.GetString(AllowLocalhost)
+	c.AutoCreateCiliumNodeResource = viper.GetBool(AutoCreateCiliumNodeResource)
 	c.BPFCompilationDebug = viper.GetBool(BPFCompileDebugName)
 	c.CTMapEntriesGlobalTCP = viper.GetInt(CTMapEntriesGlobalTCPName)
 	c.CTMapEntriesGlobalAny = viper.GetInt(CTMapEntriesGlobalAnyName)

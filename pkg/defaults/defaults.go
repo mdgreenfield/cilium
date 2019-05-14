@@ -216,4 +216,8 @@ const (
 	// option.ForceLocalPolicyEvalAtSource. It is enabled by default to
 	// provide backwards compatibility, it can be disabled via an option
 	ForceLocalPolicyEvalAtSource = true
+
+	// AutoCreateCiliumNodeResource enables automatic creation of a
+	// CiliumNode resource for the local node
+	AutoCreateCiliumNodeResource = false
 )
