@@ -21,6 +21,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cilium/cilium/pkg/aws"
 	"github.com/cilium/cilium/pkg/controller"
 	"github.com/cilium/cilium/pkg/k8s"
 	ciliumv2 "github.com/cilium/cilium/pkg/k8s/apis/cilium.io/v2"
@@ -65,6 +66,18 @@ func newNodeStore() *nodeStore {
 				Name: node.GetName(),
 			},
 		}
+
+		if option.Config.EnableENI {
+			instanceID, instanceType, availabilityZone, err := aws.GetInstanceMetadata()
+			if err != nil {
+				log.WithError(err).Fatal("Unable to retrieve InstanceID of own EC2 instance")
+			}
+
+			nodeResource.Spec.ENI.InstanceID = instanceID
+			nodeResource.Spec.ENI.InstanceType = instanceType
+			nodeResource.Spec.ENI.AvailabilityZone = availabilityZone
+		}
+
 		_, err := ciliumClient.CiliumV2().CiliumNodes("default").Create(nodeResource)
 		if err != nil {
 			log.WithError(err).Error("Unable to create CiliumNode resource")

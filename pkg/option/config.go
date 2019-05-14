@@ -950,6 +950,8 @@ type DaemonConfig struct {
 	// AutoCreateCiliumNodeResource enables automatic creation of a
 	// CiliumNode resource for the local node
 	AutoCreateCiliumNodeResource bool
+
+	EnableENI bool
 }
 
 var (
@@ -977,6 +979,7 @@ var (
 		ForceLocalPolicyEvalAtSource: defaults.ForceLocalPolicyEvalAtSource,
 		IPAM:                         IPAMHostScope,
 		AutoCreateCiliumNodeResource: defaults.AutoCreateCiliumNodeResource,
+		EnableENI:                    true,
 	}
 )
 
