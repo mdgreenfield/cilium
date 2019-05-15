@@ -159,6 +159,15 @@ func (d *Daemon) errorDuringCreation(ep *endpoint.Endpoint, err error) (*endpoin
 // createEndpoint attempts to create the endpoint corresponding to the change
 // request that was specified.
 func (d *Daemon) createEndpoint(ctx context.Context, epTemplate *models.EndpointChangeRequest) (*endpoint.Endpoint, int, error) {
+	if option.Config.EnableEndpointRoutes {
+		if epTemplate.DatapathConfiguration == nil {
+			epTemplate.DatapathConfiguration = &models.EndpointDatapathConfiguration{}
+		}
+
+		epTemplate.DatapathConfiguration.InstallEndpointRoute = true
+		epTemplate.DatapathConfiguration.RequireEgressProg = true
+	}
+
 	ep, err := endpoint.NewEndpointFromChangeModel(epTemplate)
 	if err != nil {
 		return invalidDataError(ep, fmt.Errorf("unable to parse endpoint parameters: %s", err))

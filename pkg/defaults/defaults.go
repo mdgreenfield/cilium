@@ -220,4 +220,6 @@ const (
 	// AutoCreateCiliumNodeResource enables automatic creation of a
 	// CiliumNode resource for the local node
 	AutoCreateCiliumNodeResource = false
+
+	EnableEndpointRoutes = false
 )

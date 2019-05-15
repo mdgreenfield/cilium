@@ -476,6 +476,9 @@ const (
 	// AutoCreateCiliumNodeResource enables automatic creation of a
 	// CiliumNode resource for the local node
 	AutoCreateCiliumNodeResource = "auto-create-ciliumnode-resource"
+
+	// EnableEndpointRoutes enables use of per endpoint routes
+	EnableEndpointRoutes = "enable-endpoint-routes"
 )
 
 // FQDNS variables
@@ -954,6 +957,9 @@ type DaemonConfig struct {
 	EnableENI bool
 
 	EnableProxyRedirect bool
+
+	// EnableEndpointRoutes enables use of per endpoint routes
+	EnableEndpointRoutes bool
 }
 
 var (
@@ -983,6 +989,7 @@ var (
 		AutoCreateCiliumNodeResource: defaults.AutoCreateCiliumNodeResource,
 		EnableENI:                    true,
 		EnableProxyRedirect:          false,
+		EnableEndpointRoutes:         defaults.EnableEndpointRoutes,
 	}
 )
 
