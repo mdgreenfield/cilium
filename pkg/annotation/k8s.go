@@ -1,4 +1,4 @@
-// Copyright 2018 Authors of Cilium
+// Copyright 2018-2019 Authors of Cilium
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,4 +55,23 @@ const (
 	// GlobalService to true allows to expose remote endpoints without
 	// sharing local endpoints.
 	SharedService = Prefix + "shared-service"
+
+	// AwsENIPrefix is the prefix of all AWS ENI annotations
+	AwsENIPrefix = Prefix + ".aws.eni"
+
+	// AwsENISecurityGroups is the annotation to control the security
+	// groups used for ENI allocation
+	AwsENISecurityGroups = AwsENIPrefix + "/security-groups"
+
+	// AwsENISubnetTags is the annotation to control the subnet tags used
+	// when selecting subnets for IP allocation
+	AwsENISubnetTags = AwsENIPrefix + "/subnet-tags"
+
+	// AwsENIPreAllocate is the number of IPs to keep pre-allocated per
+	// node for fast pod scheduling
+	AwsENIPreAllocate = AwsENIPrefix + "/pre-allocate"
+
+	// AwsENIFirstInterfaceIndex is the index of the first ENI on the node
+	// to consider for IP allocation
+	AwsENIFirstInterfaceIndex = AwsENIPrefix + "/first-interface-index"
 )

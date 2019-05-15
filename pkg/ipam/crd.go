@@ -18,9 +18,12 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 
+	"github.com/cilium/cilium/pkg/annotation"
 	"github.com/cilium/cilium/pkg/aws"
 	"github.com/cilium/cilium/pkg/controller"
 	"github.com/cilium/cilium/pkg/k8s"
@@ -71,6 +74,40 @@ func newNodeStore() *nodeStore {
 			instanceID, instanceType, availabilityZone, err := aws.GetInstanceMetadata()
 			if err != nil {
 				log.WithError(err).Fatal("Unable to retrieve InstanceID of own EC2 instance")
+			}
+
+			k8snode, err := k8s.GetNode(k8s.Client(), node.GetName())
+			if err != nil {
+				log.WithError(err).Error("Unable to retrieve Kubernetes node information to extract ENI parameters")
+			} else if k8snode != nil && k8snode.Annotations != nil {
+				if v, ok := k8snode.Annotations[annotation.AwsENISecurityGroups]; ok {
+					nodeResource.Spec.ENI.SecurityGroups = strings.Split(v, ",")
+				}
+				if v, ok := k8snode.Annotations[annotation.AwsENIPreAllocate]; ok {
+					if i, err := strconv.Atoi(v); err != nil {
+						log.WithError(err).Errorf("Unable to parse value %s of %s annotation as numeric value", v, annotation.AwsENIPreAllocate)
+					} else {
+						nodeResource.Spec.ENI.PreAllocate = i
+					}
+				}
+				if v, ok := k8snode.Annotations[annotation.AwsENIFirstInterfaceIndex]; ok {
+					if i, err := strconv.Atoi(v); err != nil {
+						log.WithError(err).Errorf("Unable to parse value %s of %s annotation as numeric value", v, annotation.AwsENIFirstInterfaceIndex)
+					} else {
+						nodeResource.Spec.ENI.FirstInterfaceIndex = i
+					}
+				}
+				if v, ok := k8snode.Annotations[annotation.AwsENISubnetTags]; ok {
+					nodeResource.Spec.ENI.SubnetTags = map[string]string{}
+					for _, kvPair := range strings.Split(v, ",") {
+						kv := strings.SplitN(kvPair, "=", 2)
+						if len(kv) == 2 {
+							nodeResource.Spec.ENI.SubnetTags[kv[0]] = kv[1]
+						} else {
+							nodeResource.Spec.ENI.SubnetTags[kv[0]] = ""
+						}
+					}
+				}
 			}
 
 			nodeResource.Spec.ENI.InstanceID = instanceID
