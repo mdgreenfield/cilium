@@ -65,7 +65,7 @@ struct bpf_elf_map __section_maps LB6_RR_SEQ_MAP_V2 = {
 
 struct bpf_elf_map __section_maps LB6_BACKEND_MAP = {
 	.type           = BPF_MAP_TYPE_HASH,
-	.size_key       = sizeof(__u16),
+	.size_key       = sizeof(__u32),
 	.size_value     = sizeof(struct lb6_backend),
 	.pinning        = PIN_GLOBAL_NS,
 	.max_elem       = CILIUM_LB_MAP_MAX_ENTRIES,
@@ -124,7 +124,7 @@ struct bpf_elf_map __section_maps LB4_RR_SEQ_MAP_V2 = {
 
 struct bpf_elf_map __section_maps LB4_BACKEND_MAP = {
 	.type           = BPF_MAP_TYPE_HASH,
-	.size_key       = sizeof(__u16),
+	.size_key       = sizeof(__u32),
 	.size_value     = sizeof(struct lb4_backend),
 	.pinning        = PIN_GLOBAL_NS,
 	.max_elem       = CILIUM_LB_MAP_MAX_ENTRIES,
